@@ -56,7 +56,6 @@ docker run -it \
   --env OLLAMA_URL=http://host.docker.internal:11434
 ```
 
-
 ## Client library CLI
 
 **Terminal 4**

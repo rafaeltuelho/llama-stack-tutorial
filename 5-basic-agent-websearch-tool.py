@@ -20,7 +20,6 @@ logger = logging.getLogger(__name__)
 LLAMA_STACK_SERVER=os.getenv("LLAMA_STACK_SERVER")
 LLAMA_STACK_MODEL=os.getenv("LLAMA_STACK_MODEL")
 
-
 print(LLAMA_STACK_SERVER)
 print(LLAMA_STACK_MODEL)
 
@@ -44,7 +43,7 @@ response = agent.create_turn(
     messages=[
         {
             "role": "user",
-            "content": "Search the web and and tell me who won the last Super Bowl?",
+            "content": "Search the web and and tell me who won the last Super Bowl.",
         }
     ],
     session_id=session_id,

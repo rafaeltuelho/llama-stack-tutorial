@@ -29,6 +29,9 @@ client = LlamaStackClient(
     base_url=LLAMA_STACK_SERVER
 )
 
+# Register a safety shield
+shield_id = "content_safety"
+client.shields.register(shield_id=shield_id, provider_shield_id="Llama-Guard-3-8B")
 
 # Streamlit UI
 st.title("Llama Stack, MCP, Shields demo")
@@ -53,16 +56,16 @@ if prompt:
         sampling_params={
             "strategy": {"type": "top_p", "temperature": 1.0, "top_p": 0.9},
         },
-        toolgroups=[],
-        # toolgroups=(
-        #     [
-        #         # "mcp::my-python-server-math",
-        #         "mcp::my-node-server-math",
-        #         "mcp::my-node-server-other",
-        #         # "mcp::mcp-website-fetcher"
-        #     ]
-        # ),
-        # tool_choice="auto",
+        # toolgroups=[],
+        toolgroups=(
+            [
+                # "mcp::my-python-server-math",
+                "mcp::my-node-server-math",
+                "mcp::my-node-server-other",
+                "mcp::mcp-website-fetcher"
+            ]
+        ),
+        tool_choice="auto",
         input_shields=["content_safety"],
         output_shields=[],
         enable_session_persistence=True,

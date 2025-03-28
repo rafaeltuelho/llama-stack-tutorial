@@ -6,5 +6,5 @@ npm install zod
 ```
 
 ```
-npx -y supergateway --port 8002 --stdio "node index.mjs"
+npx -y supergateway --port 8000 --stdio "node index.mjs"
 ```

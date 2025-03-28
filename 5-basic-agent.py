@@ -3,6 +3,9 @@ from uuid import uuid4
 from llama_stack_client.lib.agents.agent import Agent
 from llama_stack_client import LlamaStackClient
 from llama_stack_client.lib.agents.event_logger import EventLogger as AgentEventLogger
+from dotenv import load_dotenv
+
+load_dotenv()
 
 LLAMA_STACK_SERVER=os.getenv("LLAMA_STACK_SERVER")
 LLAMA_STACK_MODEL=os.getenv("LLAMA_STACK_MODEL")

@@ -1,5 +1,4 @@
 import os
-import json
 from llama_stack_client import LlamaStackClient
 from rich.pretty import pprint
 from dotenv import load_dotenv
@@ -24,7 +23,6 @@ print(LLAMA_STACK_MODEL)
 client = LlamaStackClient(
     base_url=os.getenv("LLAMA_STACK_SERVER")
 )
-
 
 for toolgroup in client.toolgroups.list():
     pprint(toolgroup)

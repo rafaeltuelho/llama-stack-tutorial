@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 import logging
 from uuid import uuid4
-from llama_stack.apis.common.content_types import URL
+
 from llama_stack_client.lib.agents.agent import Agent
 from llama_stack_client.lib.agents.event_logger import EventLogger as AgentEventLogger
 
@@ -57,7 +57,7 @@ response = agent.create_turn(
             # "content": "iana.org/domains/reserved",
             # "content": "neverssl.com",
             # "content": "norvig.com",
-            # "content" : "www.gnu.org/licenses/gpl-3.0.txt"
+            "content" : "www.gnu.org/licenses/gpl-3.0.txt"
         }
     ],
     session_id=session_id,

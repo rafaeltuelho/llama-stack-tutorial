@@ -1,5 +1,6 @@
 import os
-
+from dotenv import load_dotenv
+load_dotenv()
 
 from llama_stack_client import LlamaStackClient
 client = LlamaStackClient(base_url=os.getenv("LLAMA_STACK_SERVER"))

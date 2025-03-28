@@ -2,7 +2,6 @@
 ```
 npm install express
 npm install @modelcontextprotocol/sdk
-npm install zod
 ```
 
 ```
