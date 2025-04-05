@@ -1,0 +1,5 @@
+streamlit
+llama-stack-client
+dotenv
+docling
+transformers

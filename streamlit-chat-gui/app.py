@@ -24,7 +24,6 @@ LLAMA_STACK_MODEL=os.getenv("LLAMA_STACK_MODEL")
 logger.info(LLAMA_STACK_SERVER)
 logger.info(LLAMA_STACK_MODEL)
 
-from llama_stack_client import LlamaStackClient
 client = LlamaStackClient(
     base_url=LLAMA_STACK_SERVER
 )
