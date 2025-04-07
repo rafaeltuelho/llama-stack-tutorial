@@ -27,50 +27,70 @@ LLAMA_STACK_MODEL=os.getenv("LLAMA_STACK_MODEL")
 VISION_MODEL="granite3.2-vision:2b"
 VECTOR_DB_ID = "chat_documents"
 
+def register_vector_db(client):
+    try:
+        response = client.vector_dbs.retrieve(vector_db_id=VECTOR_DB_ID)
+        if response:
+            print(f"Vector db {VECTOR_DB_ID} already exists.")
+            return
+    except Exception as e:
+        logger.error("Vector db %s does not exist: %s", VECTOR_DB_ID, e)
+        response = client.vector_dbs.register(
+            vector_db_id=VECTOR_DB_ID,
+            embedding_model="all-MiniLM-L6-v2",
+            embedding_dimension=384,
+            provider_id="faiss",
+        )
+        if response:
+            print(f"Vector db {VECTOR_DB_ID} registered.")
+        else:
+            return
 def init_session_state():
-  # Initialize LlamaStack client and Agent
-  client = LlamaStackClient(base_url=LLAMA_STACK_SERVER)
+    # Initialize LlamaStack client and Agent
+    client = LlamaStackClient(base_url=LLAMA_STACK_SERVER)
 
-  # Register vision model
-  client.models.register(
-      model_id="granite3.2-vision:2b",
-      model_type="llm",
-      provider_id="ollama",
-      provider_model_id="granite3.2-vision:2b",
-      metadata={"description": "granite3.2-vision:2b via ollama"}
-  )
-  # Register the model and safety shield
-  client.models.register(
-      model_id="meta-llama/Llama-Guard-3-8B",
-      model_type="llm",
-      provider_id="ollama",
-      provider_model_id="llama-guard3:8b-q4_0",
-      metadata={"description": "llama-guard3:8b-q4_0 via ollama"}
-  )
-  # Register a safety shield
-  client.shields.register(shield_id="content_safety", provider_shield_id="Llama-Guard-3-8B")
+    # Register a vector db
+    register_vector_db(client)
+    # Register vision model
+    client.models.register(
+        model_id="granite3.2-vision:2b",
+        model_type="llm",
+        provider_id="ollama",
+        provider_model_id="granite3.2-vision:2b",
+        metadata={"description": "granite3.2-vision:2b via ollama"}
+    )
+    # Register the model and safety shield
+    client.models.register(
+        model_id="meta-llama/Llama-Guard-3-8B",
+        model_type="llm",
+        provider_id="ollama",
+        provider_model_id="llama-guard3:8b-q4_0",
+        metadata={"description": "llama-guard3:8b-q4_0 via ollama"}
+    )
+    # Register a safety shield
+    client.shields.register(shield_id="content_safety", provider_shield_id="Llama-Guard-3-8B")
 
-  agent = Agent(
-    client, 
-    model=LLAMA_STACK_MODEL,
-    instructions=SYSTEM_PROMPT,
-    enable_session_persistence=True,
-    input_shields=["content_safety"],
-    output_shields=["content_safety"],
-    # Control the inference loop
-    max_infer_iters=5,
-    tools=[
-          {
-              "name": "builtin::rag/knowledge_search",
-              "args": { "vector_db_ids": [VECTOR_DB_ID] },
-          }
-      ])
-  agent_session_id = agent.create_session("rag-session")
-  logger.info("LlamaStack Agent created with session Id: %s", agent_session_id)
+    agent = Agent(
+        client, 
+        model=LLAMA_STACK_MODEL,
+        instructions=SYSTEM_PROMPT,
+        enable_session_persistence=True,
+        input_shields=["content_safety"],
+        output_shields=["content_safety"],
+        # Control the inference loop
+        max_infer_iters=5,
+        tools=[
+            {
+                "name": "builtin::rag/knowledge_search",
+                "args": { "vector_db_ids": [VECTOR_DB_ID] },
+            }
+        ])
+    agent.create_session("rag-session")
+    logger.info("LlamaStack Agent created with session Id: %s", agent.session_id)
 
-  st.session_state.initialized = True
-  st.session_state.agent = agent
-  st.session_state.client = client
+    st.session_state.initialized = True
+    st.session_state.agent = agent
+    st.session_state.client = client
 
 if __name__ == '__main__':
 
