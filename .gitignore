@@ -2,3 +2,21 @@
 .DS_Store
 venv/
 node_modules/
+
+# Ignore Python cache files
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pdb
+*.egg-info/
+*.egg
+*.whl
+*.mypy_cache/
+*.pytest_cache/
+*.coverage
+*.cover
+*.hypothesis/
+*.tox/
+*.coverage.*

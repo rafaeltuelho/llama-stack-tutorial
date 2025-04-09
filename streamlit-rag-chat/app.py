@@ -78,7 +78,7 @@ def init_session_state():
         input_shields=["content_safety"],
         output_shields=["content_safety"],
         # Control the inference loop
-        max_infer_iters=5,
+        # max_infer_iters=5,
         tools=[
             {
                 "name": "builtin::rag/knowledge_search",
@@ -158,7 +158,6 @@ if __name__ == '__main__':
                 ],
                 session_id=agent_session_id,
             )
-            logger.info("\nAgent response: %s", response)
 
             for chunk in response:
                 # logger.info("response chunk: %s", chunk)

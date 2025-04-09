@@ -13,7 +13,7 @@ from docling_core.types.doc.document import PictureDescriptionData
 from docling.chunking import HybridChunker
 from docling.document_converter import DocumentConverter, PdfFormatOption
 from docling.datamodel.base_models import DocumentStream, InputFormat
-from docling.datamodel.pipeline_options import PdfPipelineOptions, PictureDescriptionApiOptions
+from docling.datamodel.pipeline_options import PdfPipelineOptions, PictureDescriptionLlamaStackApiOptions
 from docling.datamodel.pipeline_options import granite_picture_description, smolvlm_picture_description
 
 load_dotenv()
@@ -33,19 +33,19 @@ VECTOR_DB_ID = "chat_documents"
   
 def process_document(client, file_name, stream_bytes):
     # Read the PDF document using Docling
-    picture_description_options = smolvlm_picture_description
-    picture_description_options.prompt = """
-            I am only interested in performance charts (bar, pie, histogram, boxplot, etc) that may appear in the image. 
-            If it does NOT contain a chart, just give a short and concise description.
-            But, If it does contain a chart of any kind please do your best to analyse it from a performance chart perspective and summarize the numerical or percentages represented in the whole chart series.
-        """
+    # picture_description_options = smolvlm_picture_description
+    # picture_description_options.prompt = """
+    #         I am only interested in performance charts (bar, pie, histogram, boxplot, etc) that may appear in the image. 
+    #         If it does NOT contain a chart, just give a short and concise description.
+    #         But, If it does contain a chart of any kind please do your best to analyse it from a performance chart perspective and summarize the numerical or percentages represented in the whole chart series.
+    #     """
     pdf_pipeline_options = PdfPipelineOptions(
         images_scale = 2.0,
         do_picture_description=True,
         generate_picture_images=True,
         enable_remote_services=True,
-        # picture_description_options= vllm_options(model=VISION_MODEL) # Doesn't work with llama-stack
-        picture_description_options= picture_description_options
+        picture_description_options= llama_stack_options(model=VISION_MODEL) # Doesn't work with llama-stack
+        # picture_description_options= picture_description_options
     )
     format_options = {
         InputFormat.PDF: PdfFormatOption(pipeline_options=pdf_pipeline_options),
@@ -65,9 +65,9 @@ def process_document(client, file_name, stream_bytes):
     chunks = list(chunk_iter)
     ser_chunks = []
     for i, chunk in enumerate(chunks):
-        # print(f"=== Chunk #{i} ===")
-        # txt_tokens = len(tokenizer.tokenize(chunk.text))
-        # print(f"chunk.text ({txt_tokens} tokens):\n{repr(chunk.text)}")
+        print(f"=== Chunk #{i} ===")
+        txt_tokens = len(tokenizer.tokenize(chunk.text))
+        print(f"chunk.text ({txt_tokens} tokens):\n{repr(chunk.text)}")
 
         ser_txt = chunker.serialize(chunk=chunk)
         ser_tokens = len(tokenizer.tokenize(ser_txt))
@@ -132,8 +132,8 @@ def encode_image(image: PIL.Image.Image, format: str = "png") -> str:
 #     return []
 
 # Doesen't work with llama-stack API yet!!!
-def vllm_options(model: str):
-    options = PictureDescriptionApiOptions(
+def llama_stack_options(model: str):
+    options = PictureDescriptionLlamaStackApiOptions(
         url=LLAMA_STACK_SERVER_CHAT_API,
         params=dict(
             model_id=model,
@@ -141,7 +141,7 @@ def vllm_options(model: str):
         prompt="""
             Here is an image. I am only interested in performance charts (bar, pie, histogram, boxplot, etc) that may appear in the image. 
             If it does NOT contain a chart, just give a short and concise description.
-            But, If it does contain a chart of any kind please do your best to analyse it from a performance chart perspective and summarize the numerical or percentages represented in the whole chart series.
+            But, If it does contain a chart of any kind please do your best to analyse it from a performance perspective and explain data points numerical or percentages represented in the chart.
         """,
         timeout=90,
     )
